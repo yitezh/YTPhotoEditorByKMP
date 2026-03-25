@@ -119,7 +119,11 @@ class PhotoEditorViewController: UIViewController {
     }
 
     @objc private func backTapped() {
-        navigationController?.popViewController(animated: true) ?? dismiss(animated: true)
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     @objc private func undoTapped() {
