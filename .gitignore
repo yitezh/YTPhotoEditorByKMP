@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+**/build/
+*.class
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+local.properties
+
+# Kotlin
+.kotlin/
+
+# iOS / Xcode
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+.DS_Store
+
+# Misc
+*.log
+*.tmp
