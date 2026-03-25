@@ -91,8 +91,6 @@ YTPhotoEditorByKMP/
 1. 使用 Xcode 打开 `iosApp/PhotoEditor.xcodeproj`
 2. 选择模拟器或真机，直接运行
 
-> iOS 端目前使用原生 Swift 实现独立运行。如需启用 KMP 共享逻辑，需先执行 `./gradlew :shared:assembleXCFramework` 生成框架并集成。
-
 ## 许可证
 
 MIT
