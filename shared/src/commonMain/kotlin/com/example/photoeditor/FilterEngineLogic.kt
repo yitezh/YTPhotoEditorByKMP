@@ -8,7 +8,10 @@ data class RenderParams(
     val saturation: Float,
     val vibrance: Float,
     val warmth: Float,
-    val sharpness: Float
+    val sharpness: Float,
+    val texture: Float,
+    val clarity: Float,
+    val dehaze: Float
 )
 
 class FilterEngineLogic {
@@ -42,7 +45,10 @@ class FilterEngineLogic {
             saturation = parameters.saturation / 100f,
             vibrance = parameters.vibrance / 100f,
             warmth = parameters.warmth / 100f,
-            sharpness = parameters.sharpness / 100f
+            sharpness = parameters.sharpness / 100f,
+            texture = parameters.texture / 100f,
+            clarity = parameters.clarity / 100f,
+            dehaze = parameters.dehaze / 100f
         )
     }
 

@@ -19,7 +19,7 @@ private val tabKeys: Map<ToolTab, List<AdjustmentKey>> = mapOf(
     ToolTab.LIGHT   to listOf(AdjustmentKey.EXPOSURE, AdjustmentKey.CONTRAST, AdjustmentKey.HIGHLIGHTS, AdjustmentKey.SHADOWS),
     ToolTab.COLOR   to listOf(AdjustmentKey.SATURATION, AdjustmentKey.VIBRANCE, AdjustmentKey.WARMTH),
     ToolTab.EFFECTS to emptyList(),
-    ToolTab.DETAIL  to listOf(AdjustmentKey.SHARPNESS)
+    ToolTab.DETAIL  to listOf(AdjustmentKey.SHARPNESS, AdjustmentKey.TEXTURE, AdjustmentKey.CLARITY, AdjustmentKey.DEHAZE)
 )
 
 private fun EditParameters.valueOf(key: AdjustmentKey): Float = when (key) {
@@ -31,6 +31,9 @@ private fun EditParameters.valueOf(key: AdjustmentKey): Float = when (key) {
     AdjustmentKey.VIBRANCE   -> vibrance
     AdjustmentKey.WARMTH     -> warmth
     AdjustmentKey.SHARPNESS  -> sharpness
+    AdjustmentKey.TEXTURE    -> texture
+    AdjustmentKey.CLARITY    -> clarity
+    AdjustmentKey.DEHAZE     -> dehaze
 }
 
 private fun AdjustmentKey.displayName(): String = when (this) {
@@ -42,6 +45,9 @@ private fun AdjustmentKey.displayName(): String = when (this) {
     AdjustmentKey.VIBRANCE   -> "自然饱和度"
     AdjustmentKey.WARMTH     -> "色温"
     AdjustmentKey.SHARPNESS  -> "锐化"
+    AdjustmentKey.TEXTURE    -> "纹理"
+    AdjustmentKey.CLARITY    -> "清晰度"
+    AdjustmentKey.DEHAZE     -> "去朦胧"
 }
 
 @Composable

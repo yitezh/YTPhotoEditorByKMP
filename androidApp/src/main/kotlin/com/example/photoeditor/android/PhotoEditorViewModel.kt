@@ -104,6 +104,9 @@ class PhotoEditorViewModel : ViewModel() {
             AdjustmentKey.VIBRANCE -> current.copy(vibrance = clamped)
             AdjustmentKey.WARMTH -> current.copy(warmth = clamped)
             AdjustmentKey.SHARPNESS -> current.copy(sharpness = clamped)
+            AdjustmentKey.TEXTURE -> current.copy(texture = clamped)
+            AdjustmentKey.CLARITY -> current.copy(clarity = clamped)
+            AdjustmentKey.DEHAZE -> current.copy(dehaze = clamped)
         }
         editHistory.push(updated)
         updateStateAndPreview(updated)

@@ -1,80 +1,122 @@
 import UIKit
 import CoreImage
-// import shared  // Uncomment after XCFramework is integrated
+import shared
 
-/// KMP-backed ViewModel that replaces the native Swift PhotoEditorViewModel.
-/// Delegates all business logic to the KMP shared module.
-///
-/// This class bridges the KMP Kotlin API to the Swift UIKit layer,
-/// maintaining the same interface as the original PhotoEditorViewModel.
-class KMPPhotoEditorViewModel {
+/// KMP-backed ViewModel that delegates business logic to the KMP shared module
+/// via KMPBridge, while keeping the same interface as PhotoEditorViewModel.
+class KMPPhotoEditorViewModel: PhotoEditorViewModelProtocol {
 
-    // MARK: - KMP Dependencies (uncomment after XCFramework integration)
-    // private let editHistory: EditHistory
-    // private let filterEngine: FilterEngineLogic
-    // private let imageRenderer: ImageRenderer
-    // private let exporter: PhotoLibraryExporter
+    let filterEngine: FilterEngine
+    private let bridge = KMPBridge()
 
-    // MARK: - State
+    private(set) var currentParameters: EditParameters = .default
+    private(set) var activeFilter: FilterPreset?
+    private var preFilterParameters: EditParameters?
+
     var sourceImage: CIImage?
     var previewSize: CGSize = CGSize(width: 1080, height: 1920)
 
-    // MARK: - Computed Properties (delegated to KMP)
-    // var canUndo: Bool { editHistory.canUndo }
-    // var canRedo: Bool { editHistory.canRedo }
-
-    // MARK: - Callbacks
     var onPreviewUpdated: ((UIImage?) -> Void)?
     var onHistoryChanged: (() -> Void)?
 
-    // MARK: - Parameter Updates
+    var canUndo: Bool { bridge.canUndo }
+    var canRedo: Bool { bridge.canRedo }
 
-    /// Update a single adjustment parameter and push to KMP EditHistory.
-    func updateParameter(_ key: String, value: Float) {
-        // KMP integration:
-        // var params = currentParameters.copy(...)
-        // editHistory.push(params)
-        // refreshPreview()
+    init(filterEngine: FilterEngine = FilterEngine()) {
+        self.filterEngine = filterEngine
+        bridge.pushHistory(currentParameters)
     }
 
-    // MARK: - Undo / Redo (delegated to KMP EditHistory)
+    func updateParameter(_ key: AdjustmentKey, value: Float) {
+        let clamped = min(100, max(-100, value))
+        applyKeyValue(key, value: clamped)
+        pushAndRefresh()
+    }
+
+    func updateParameterPreview(_ key: AdjustmentKey, value: Float) {
+        let clamped = min(100, max(-100, value))
+        applyKeyValue(key, value: clamped)
+        refreshPreview()
+    }
+
+    func commitParameterChange() {
+        bridge.pushHistory(currentParameters)
+        onHistoryChanged?()
+    }
+
+    func resetParameter(_ key: AdjustmentKey) {
+        updateParameter(key, value: 0)
+    }
+
+    func applyFilter(_ preset: FilterPreset) {
+        preFilterParameters = currentParameters
+        currentParameters = bridge.applyPreset(preset, current: currentParameters)
+        currentParameters.cropRect = preFilterParameters?.cropRect
+        currentParameters.rotationCount = preFilterParameters?.rotationCount ?? 0
+        activeFilter = preset
+        pushAndRefresh()
+    }
+
+    func removeFilter() {
+        guard activeFilter != nil else { return }
+        if let saved = preFilterParameters {
+            var restored = saved
+            restored.cropRect = currentParameters.cropRect
+            restored.rotationCount = currentParameters.rotationCount
+            currentParameters = restored
+        }
+        activeFilter = nil
+        preFilterParameters = nil
+        pushAndRefresh()
+    }
+
+    func applyCrop(_ rect: CGRect, rotation: Int) {
+        currentParameters.cropRect = CodableCGRect(rect)
+        currentParameters.rotationCount = rotation
+        pushAndRefresh()
+    }
 
     func undo() {
-        // if let restored = editHistory.undo() {
-        //     currentParameters = restored
-        //     refreshPreview()
-        //     onHistoryChanged?()
-        // }
+        if let restored = bridge.undo() {
+            currentParameters = restored
+            refreshPreview()
+            onHistoryChanged?()
+        }
     }
 
     func redo() {
-        // if let restored = editHistory.redo() {
-        //     currentParameters = restored
-        //     refreshPreview()
-        //     onHistoryChanged?()
-        // }
+        if let restored = bridge.redo() {
+            currentParameters = restored
+            refreshPreview()
+            onHistoryChanged?()
+        }
     }
 
-    // MARK: - Filter Presets (delegated to KMP FilterEngineLogic)
-
-    func applyPreset(_ presetId: String) {
-        // let preset = filterEngine.builtinPresets.first { $0.id == presetId }
-        // guard let preset = preset else { return }
-        // currentParameters = filterEngine.applyPreset(preset: preset, current: currentParameters)
-        // editHistory.push(currentParameters)
-        // refreshPreview()
+    private func applyKeyValue(_ key: AdjustmentKey, value: Float) {
+        switch key {
+        case .exposure:   currentParameters.exposure = value
+        case .contrast:   currentParameters.contrast = value
+        case .highlights: currentParameters.highlights = value
+        case .shadows:    currentParameters.shadows = value
+        case .saturation: currentParameters.saturation = value
+        case .vibrance:   currentParameters.vibrance = value
+        case .warmth:     currentParameters.warmth = value
+        case .sharpness:  currentParameters.sharpness = value
+        case .texture:    currentParameters.texture = value
+        case .clarity:    currentParameters.clarity = value
+        case .dehaze:     currentParameters.dehaze = value
+        }
     }
 
-    func removePreset() {
-        // currentParameters = filterEngine.removePreset(base: baseParameters)
-        // editHistory.push(currentParameters)
-        // refreshPreview()
+    private func pushAndRefresh() {
+        bridge.pushHistory(currentParameters)
+        onHistoryChanged?()
+        refreshPreview()
     }
 
-    // MARK: - Serialization (delegated to KMP EditParametersSerializer)
-
-    func serializeCurrentParameters() -> String {
-        // return EditParametersSerializer().serialize(parameters: currentParameters)
-        return "{}"
+    private func refreshPreview() {
+        guard let source = sourceImage else { return }
+        let preview = filterEngine.generatePreview(parameters: currentParameters, source: source, targetSize: previewSize)
+        onPreviewUpdated?(preview)
     }
 }

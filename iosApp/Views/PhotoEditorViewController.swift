@@ -2,7 +2,7 @@ import UIKit
 
 class PhotoEditorViewController: UIViewController {
 
-    private let viewModel: PhotoEditorViewModel
+    private let viewModel: PhotoEditorViewModelProtocol
     private let previewView = ImagePreviewView()
     private let toolTabBar = ToolTabBarView()
     private let adjustmentPanel = AdjustmentPanelView()
@@ -22,7 +22,7 @@ class PhotoEditorViewController: UIViewController {
     private let textColor = UIColor(red: 224/255, green: 224/255, blue: 224/255, alpha: 1.0)
     private let disabledColor = UIColor(white: 0.35, alpha: 1.0)
 
-    init(viewModel: PhotoEditorViewModel) {
+    init(viewModel: PhotoEditorViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

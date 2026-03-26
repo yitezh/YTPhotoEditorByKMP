@@ -1,9 +1,11 @@
 package com.example.photoeditor
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIImageJPEGRepresentation
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 
+@OptIn(ExperimentalForeignApi::class)
 actual class PhotoLibraryExporter {
     actual suspend fun export(
         image: PlatformImage,
@@ -13,7 +15,7 @@ actual class PhotoLibraryExporter {
         val uiImage = image.uiImage
         when (format) {
             ExportFormat.JPEG -> {
-                val data = UIImageJPEGRepresentation(uiImage, quality / 100.0)
+                UIImageJPEGRepresentation(uiImage, quality / 100.0)
                     ?: throw IllegalStateException("Failed to encode JPEG")
                 UIImageWriteToSavedPhotosAlbum(uiImage, null, null, null)
             }

@@ -23,6 +23,13 @@ kotlin {
         }
     }
 
+    // Register embedAndSignAppleFrameworkForXcode task for Xcode integration
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.all {
+            freeCompilerArgs += "-Xobjc-generics"
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.serialization.json)

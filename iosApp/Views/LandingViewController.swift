@@ -83,9 +83,11 @@ class LandingViewController: UIViewController {
     }
 
     private func navigateToEditor(uiImage: UIImage) {
-        let viewModel = PhotoEditorViewModel()
+        let viewModel: PhotoEditorViewModelProtocol = KMPPhotoEditorViewModel()
+        let bridge = KMPBridge()
+        let presets = bridge.builtinPresets
         let editorVC = PhotoEditorViewController(viewModel: viewModel)
-        editorVC.setFilterPresets(FilterPreset.builtins)
+        editorVC.setFilterPresets(presets)
         editorVC.setSourceImage(uiImage)
         navigationController?.pushViewController(editorVC, animated: true)
     }

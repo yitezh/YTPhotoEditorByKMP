@@ -20,6 +20,9 @@ data class EditParameters(
     val vibrance: Float = 0f,
     val warmth: Float = 0f,
     val sharpness: Float = 0f,
+    val texture: Float = 0f,
+    val clarity: Float = 0f,
+    val dehaze: Float = 0f,
     val cropRect: CropRect? = null,
     val rotationCount: Int = 0     // 0-3, clockwise 90° count
 ) {
